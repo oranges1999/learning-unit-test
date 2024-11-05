@@ -27,8 +27,8 @@ jobs:
       - name: Copy .env file
         run: cp .env.example .env
 
-      - name: Generate application key
-        run: php artisan key:generate
+      # - name: Generate application key
+      #   run: php artisan key:generate
 
       - name: Run unit tests
         env:
