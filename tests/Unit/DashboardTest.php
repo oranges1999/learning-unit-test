@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -18,7 +19,7 @@ class DashboardTest extends TestCase
      */
     public function test_auth_user_access_dashboard_return_200(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->make();
         $response = $this->actingAs($user)->get(route('dashboard'));
         $response->assertStatus(200);
     }
