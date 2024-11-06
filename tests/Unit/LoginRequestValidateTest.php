@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class LoginRequestTest extends TestCase
+class LoginRequestValidateTest extends TestCase
 {
     protected $rules;
 
@@ -32,7 +32,7 @@ class LoginRequestTest extends TestCase
     public static function provider_test_form_request_return_true()
     {
         return [
-            [[
+            "valid data" => [[
                 'email' => 'test@test.com',
                 'password' => '123'
             ]],
@@ -49,7 +49,7 @@ class LoginRequestTest extends TestCase
     public static function provider_test_form_request_return_false()
     {
         return [
-            "email is not in right format" => [[
+            "email is not right format" => [[
                 'email' => 'test',
                 'password' => 'password'
             ]],
@@ -61,14 +61,14 @@ class LoginRequestTest extends TestCase
                 'email' => 'test',
                 'password' => ''
             ]],
+            "email is null" => [[
+                'email' => null,
+                'password' => 'password'
+            ]],
             "password is null" => [[
                 'email' => 'test',
                 'password' => null
             ]],
-            "email is null" => [[
-                'email' => null,
-                'password' => 'password'
-            ]]
         ];
     }
 }

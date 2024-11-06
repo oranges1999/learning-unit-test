@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use App\Service\User;
 
-class UserTest extends TestCase
+class UserServiceTest extends TestCase
 {
     protected $userData;
 
@@ -46,7 +46,7 @@ class UserTest extends TestCase
         $this->assertTrue(array_key_exists('password', $user->getUser()));
     }
 
-    public function test_password_is_the_same()
+    public function test_password_is_md5_hashed()
     {
         $userData = $this->userData;
         $user = new User($userData);

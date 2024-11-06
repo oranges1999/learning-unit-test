@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use App\Service\InteractWithTwoNumber;
 
-class InteractWithTwoNumberTest extends TestCase
+class InteractWithTwoNumberServiceTest extends TestCase
 {
     protected $service;
 
