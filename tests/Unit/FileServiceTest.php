@@ -33,7 +33,7 @@ class FileServiceTest extends TestCase
         $fileData = $this->fileService->storeFile($file, $folder);
 
         foreach ($arrayKeys as $arrayKey) {
-            $this->assertTrue(array_key_exists($arrayKey,$fileData) && $fileData[$arrayKey] != null);
+            $this->assertTrue($fileData[$arrayKey] != null);
         }
         $this->assertTrue(Storage::exists($fileData['file_url']));
     }
@@ -43,17 +43,26 @@ class FileServiceTest extends TestCase
         return [
             "image" => ['avatars',UploadedFile::fake()->create('avatars.jpg')],
             "document" => ['documents',UploadedFile::fake()->create('document.pdf')],
-            "without folder" => ['',UploadedFile::fake()->create('file.docx')]
+            "null folder" => ['',UploadedFile::fake()->create('file.docx')]
         ];
     }
 
-    public function test_store_file_fail_with_null_file(): void
+    public function test_expect_type_error(): void
     {
         $this->expectException(TypeError::class);
         $folder = '';
         $file = null;
 
         $fileData = $this->fileService->storeFile($file, $folder);
+    }
+
+    public function test_expect_arguments_count_error(): void
+    {
+        $this->expectException(TypeError::class);
+        // $folder = '';
+        $file = UploadedFile::fake()->create('document.pdf');
+
+        $fileData = $this->fileService->storeFile($file);
     }
 
     #[DataProvider('provider_delete_file')]
@@ -76,8 +85,8 @@ class FileServiceTest extends TestCase
     public static function provider_delete_file()
     {
         return [
-            ['avatars',UploadedFile::fake()->create('avatars.jpg')],
-            ['documents',UploadedFile::fake()->create('document.pdf')],
+            "valid data set 1" => ['avatars',UploadedFile::fake()->create('avatars.jpg')],
+            "valid data set 2" => ['documents',UploadedFile::fake()->create('document.pdf')],
         ];
     }
 
