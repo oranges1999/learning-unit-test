@@ -29,10 +29,10 @@ class InteractWithTwoNumberServiceTest extends TestCase
     public static function provider_test_add()
     {
         return [
-            "Integer" => [1,2,3],
-            "Float" => [0.1,0.2,0.3],
-            "Fraction" => [1/2,1/3,round(5/6,4)],
-            "Negative Integer" => [-1,-2,-3]
+            "integer" => [1,2,3],
+            "float" => [0.1,0.2,0.3],
+            "fraction" => [1/2,1/3,round(5/6,4)],
+            "negative integer" => [-1,-2,-3]
         ];
     }
 
@@ -49,10 +49,10 @@ class InteractWithTwoNumberServiceTest extends TestCase
     public static function provider_test_subtract()
     {
         return [
-            'Integer' => [1,2,-1],
-            'Float' => [0.1,0.2,-0.1],
-            'Fraction' => [1/2,1/3,round(1/6,4)],
-            'Negative integer' => [-1,-2,1]
+            'integer' => [1,2,-1],
+            'float' => [0.1,0.2,-0.1],
+            'fraction' => [1/2,1/3,round(1/6,4)],
+            'negative integer' => [-1,-2,1]
         ];
     }
 
