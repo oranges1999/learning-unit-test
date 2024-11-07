@@ -6,6 +6,7 @@ use App\Service\FileService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\File\Exception\NoFileException;
 use Tests\TestCase;
 use TypeError;
 
@@ -19,23 +20,37 @@ class FileServiceTest extends TestCase
         Storage::fake();
         $this->fileService = new FileService();
     }
-    /**
-     * A basic unit test example.
-     */
-    #[DataProvider('provider_store_file')]
-    public function test_store_file_return_full_data_and_file_exist($folder, $file): void
-    {
-        // Arrange
-        $arrayKeys=['file_url','file_name','file_extension'];
 
+    #[DataProvider('provider_store_file')]
+    public function test_returned_array_contains_necessary_keys($folder, $file)
+    {
+         // Arrange
+         $arrayKeys=['file_url','file_name','file_extension'];
+
+         // Act
+         $fileData = $this->fileService->storeFile($file, $folder);
+ 
+         // Assert
+         $this->assertSame($arrayKeys, array_keys($fileData));
+    }
+
+    #[DataProvider('provider_store_file')]
+    public function test_returned_array_not_have_null_value($folder, $file)
+    {
         // Act
         $fileData = $this->fileService->storeFile($file, $folder);
 
         // Assert
-        $this->assertSame($arrayKeys, array_keys($fileData));
-        foreach ($arrayKeys as $arrayKey) {
-            $this->assertTrue($fileData[$arrayKey] != null);
-        }
+        $this->assertFalse(in_array(null,array_values($fileData)));
+    }
+
+    #[DataProvider('provider_store_file')]
+    public function test_stored_file_exist($folder, $file): void
+    {
+        // Act
+        $fileData = $this->fileService->storeFile($file, $folder);
+
+        // Assert
         $this->assertTrue(Storage::exists($fileData['file_url']));
     }
 
@@ -48,47 +63,43 @@ class FileServiceTest extends TestCase
         ];
     }
 
+    public function test_expect_no_file_exception()
+    {
+        $this->expectException(NoFileException::class);
+        $folder = '';
+        $file = UploadedFile::fake()->create('');
+
+        $this->fileService->storeFile($file,$folder);
+    }
+
     public function test_expect_type_error(): void
     {
         $this->expectException(TypeError::class);
         $folder = '';
         $file = null;
 
-        $fileData = $this->fileService->storeFile($file, $folder);
+        $this->fileService->storeFile($file, $folder);
     }
 
     public function test_expect_arguments_count_error(): void
     {
         $this->expectException(TypeError::class);
-        
+
         $file = UploadedFile::fake()->create('document.pdf');
 
-        $fileData = $this->fileService->storeFile($file);
+        $this->fileService->storeFile($file);
+    }
+    
+    public function test_delete_existing_file()
+    {
+        Storage::shouldReceive('exists')->once()->andReturnTrue();
+        Storage::shouldReceive('delete')->once()->with('file.jpg')->andReturnTrue();
+        $this->assertTrue($this->fileService->deleteFile('file.jpg'));
     }
 
-    #[DataProvider('provider_delete_file')]
-    public function test_delete_existing_file($folder, $file)
+    public function test_delete_non_existing_file()
     {
-        $fileData = $this->fileService->storeFile($file, $folder);
-        
-        $this->assertTrue($this->fileService->deleteFile($fileData['file_url']));
-    }
-
-    #[DataProvider('provider_delete_file')]
-    public function test_delete_non_existing_file($folder, $file)
-    {
-        $fileData = $this->fileService->storeFile($file, $folder);
-        $this->fileService->deleteFile($fileData['file_url']);
-
-        $this->assertFalse($this->fileService->deleteFile($fileData['file_url']));
-    }
-
-    public static function provider_delete_file()
-    {
-        return [
-            "valid data set 1" => ['avatars',UploadedFile::fake()->create('avatars.jpg')],
-            "valid data set 2" => ['documents',UploadedFile::fake()->create('document.pdf')],
-        ];
+        $this->assertFalse($this->fileService->deleteFile('file.jpg'));
     }
 
     protected function tearDown(): void

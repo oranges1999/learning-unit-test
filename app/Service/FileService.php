@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\Exception\NoFileException;
 
 class FileService
 {
@@ -18,9 +19,12 @@ class FileService
                 'file_name' => $originalFileName,
                 'file_extension' => $originalFileExt,
             ];
-            return $fileData;
+            if(in_array(null,array_values($fileData))){
+                throw new NoFileException();
+            } else {
+                return $fileData;
+            }
         } catch (\Throwable $th) {
-            dd($th);
             throw $th;
         }
         
@@ -29,10 +33,10 @@ class FileService
     public function deleteFile($file)
     {
         if(Storage::exists($file)){
-            Storage::delete($file);
-            return true;
-        } else {
-            return false;
+            if(Storage::delete($file)){
+                return true;
+            } 
         }
+        return false; 
     }
 }
