@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use App\Service\FileService;
-use ArgumentCountError;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
-use Throwable;
 use TypeError;
 
 class FileServiceTest extends TestCase
@@ -28,10 +25,14 @@ class FileServiceTest extends TestCase
     #[DataProvider('provider_store_file')]
     public function test_store_file_return_full_data_and_file_exist($folder, $file): void
     {
+        // Arrange
         $arrayKeys=['file_url','file_name','file_extension'];
 
+        // Act
         $fileData = $this->fileService->storeFile($file, $folder);
 
+        // Assert
+        $this->assertSame($arrayKeys, array_keys($fileData));
         foreach ($arrayKeys as $arrayKey) {
             $this->assertTrue($fileData[$arrayKey] != null);
         }
@@ -59,7 +60,7 @@ class FileServiceTest extends TestCase
     public function test_expect_arguments_count_error(): void
     {
         $this->expectException(TypeError::class);
-        // $folder = '';
+        
         $file = UploadedFile::fake()->create('document.pdf');
 
         $fileData = $this->fileService->storeFile($file);
